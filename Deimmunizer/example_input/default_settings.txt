@@ -1,0 +1,25 @@
+treewidth,15
+treedepth,1
+mutations_per_cycle,5
+top_coppies,3
+# Epitope selection. Weights set to 0 are completely ignored in all assesments
+BP_threshold,0.1512
+maximum_bepi_length,6
+BP_position_temperature,1
+NM_threshold,0.5
+DT_threshold,1.5
+HLA_percentiles,0.5
+NM_weight, 0
+BP_weight, 1
+DT_weight, 0
+# mutation selection
+residue_temperature_blossum, 0.5
+position_temperature_logo, 0.5
+residue_temperature_logo, 2
+blossum_weight_logo,0.2
+# Binder selection weights
+DT_weight_selection,1
+BP_weight_selection,0.2
+NM_weight_selection,10
+#other minor
+contact_residue_threshold,6
