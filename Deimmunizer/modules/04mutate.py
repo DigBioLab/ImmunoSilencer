@@ -1,20 +1,10 @@
-from classes import*
+from ImmunoSilencer.Deimmunizer.modules.classes import*
 from sys import argv
 import pandas as pd
 
 run_name = input()
 settings_dict=get_settings(f'../../../{run_name}')
 
-
-# def decide_mutations(_binder):
-#     allowed_softwares = ["BP","NM","DT"]
-#     softwares = []
-#     #Scan wich softwares are pressent
-#     for colname in _binder.in_silico_metrics.columns:
-#         pre = colname[0:2]
-#         if pre in allowed_softwares:
-#             if pre not in softwares:
-#                 softwares.append(pre)
         
 argv.pop(0)
 
