@@ -1,5 +1,5 @@
 from sys import argv
-from classes import*
+from ImmunoSilencer.Deimmunizer.modules.classes import*
 settings_dict = get_settings('.')
 
 ipae_limit = 8

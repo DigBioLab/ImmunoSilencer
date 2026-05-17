@@ -1,4 +1,4 @@
-from classes import*
+from ImmunoSilencer.Deimmunizer.modules.classes import*
 from sys import argv
 run_name = input()
 settings_dict=get_settings(f'../../../{run_name}')

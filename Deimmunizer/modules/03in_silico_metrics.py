@@ -1,4 +1,4 @@
-from classes import*
+from ImmunoSilencer.Deimmunizer.modules.classes import*
 from sys import argv
 run_name=input()
 #Load default settings

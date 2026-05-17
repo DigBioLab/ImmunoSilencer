@@ -1,5 +1,5 @@
 #Load default settings
-from classes import*
+from ImmunoSilencer.Deimmunizer.modules.classes import*
 import os
 run_name = input()
 
