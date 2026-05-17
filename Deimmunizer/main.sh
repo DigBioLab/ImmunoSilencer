@@ -21,10 +21,10 @@
 # -- end of LSF options --
 
 ### --- specify directories --- ### Must be from root
-working_dir="/zhome/c8/e/204914/DBL054_RasmusB/Deimmunizer/" #location of the Deimmunizer dir
-input_dir="/zhome/c8/e/204914/DBL054_RasmusB/input2/" #Dir containing pdb and Default_settings.txt
-output_dir="/zhome/c8/e/204914/DBL054_RasmusB/output/" #Dir must be empty
-run_name="DT_full_retest" #must be unqie if you want to run multiple runs simutaniosly. "/" not alloved. May not be left empty
+working_dir="~/Deimmunizer/" #location of the Deimmunizer dir
+input_dir="~/example_input/" #Dir containing pdb and Default_settings.txt
+output_dir="~/example_output/" #Dir must be empty
+run_name="example_run" #must be unqie if you want to run multiple runs simutaniosly. "/" not alloved. May not be left empty
 ### --- ------------------- --- ###
 
 cd $working_dir
