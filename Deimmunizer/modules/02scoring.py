@@ -3,7 +3,7 @@ from sys import argv
 run_name = input()
 settings_dict=get_settings(f'../../../{run_name}')
 
-argv.pop(0) # I don't need this scripts file name
+argv.pop(0) # discard script file name
 
 while argv != []:
     arg = argv.pop(0)
