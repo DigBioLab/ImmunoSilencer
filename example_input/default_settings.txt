@@ -1,16 +1,16 @@
-treewidth,15
-treedepth,1
-mutations_per_cycle,5
+treewidth,8
+treedepth,10
+mutations_per_cycle,3
 top_coppies,3
 # Epitope selection. Weights set to 0 are completely ignored in all assesments
 BP_threshold,0.1512
-maximum_bepi_length,6
+maximum_bepi_length,3
 BP_position_temperature,1
 NM_threshold,0.5
 DT_threshold,1.5
 HLA_percentiles,0.5
-NM_weight, 0
-BP_weight, 1
+NM_weight, 1
+BP_weight, 0
 DT_weight, 0
 # mutation selection
 residue_temperature_blossum, 0.5
