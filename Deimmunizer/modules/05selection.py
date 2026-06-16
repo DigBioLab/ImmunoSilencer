@@ -1,5 +1,5 @@
 from sys import argv
-from ImmunoSilencer.Deimmunizer.modules.classes import*
+from classes import*
 settings_dict = get_settings('.')
 
 ipae_limit = 8
@@ -13,12 +13,14 @@ candidates = argv[:]
 def score_epitopes(candidate_dir,
                    NM_weight_selection=settings_dict["NM_weight_selection"],
                    BP_weight_selection=settings_dict["BP_weight_selection"],
-                   DT_weight_selection=settings_dict["DT_weight_selection"]):
+                   DT_weight_selection=settings_dict["DT_weight_selection"],
+                   IG_weight_selection=settings_dict["IG_weight_selection"]):
     
     epitope_df = pd.read_csv(f'{candidate_dir}/metrics_epitopes.csv', sep = '\t')
     weights = {'NM': NM_weight_selection,
                'BP': BP_weight_selection,
-               'DT': DT_weight_selection}
+               'DT': DT_weight_selection,
+               'IG': DT_weight_selection}
     score=0
     for flag,humanness in zip(list(epitope_df["Epitopes"]), list(epitope_df["Epitope_Humanness"])):
         if float(humanness) == 0:

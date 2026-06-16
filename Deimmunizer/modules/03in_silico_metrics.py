@@ -1,4 +1,4 @@
-from ImmunoSilencer.Deimmunizer.modules.classes import*
+from classes import*
 from sys import argv
 run_name=input()
 #Load default settings
@@ -22,8 +22,12 @@ while argv != []:
         fasta_path = argv.pop(0)
     if arg =='-p':
         full_pdb = argv.pop(0)
+    if arg =='-i':
+        ig_path = argv.pop(0)
+        softwares_all.append("IG")
 
 softwares=[]
+print(settings_dict)
 for prefix in softwares_all:
     if float(settings_dict[f'{prefix}_weight']) != 0:
         softwares.append(prefix)
@@ -45,6 +49,9 @@ if "NM" in softwares:
 
 if "DT" in softwares:
     binder.load_DiscoTope_results(disco_path)
+    
+if "IG" in softwares:
+    binder.load_ImmunoGen_results(ig_path)
 
 df = binder.merge_software_results()
 binder.in_silico_metrics = df
@@ -54,6 +61,7 @@ metrics_in_epitopes = binder.get_epitopes_from_metrics(softwares=softwares,
                                                        maximum_bepi_length=settings_dict["maximum_bepi_length"],
                                                        BP_threshold = settings_dict["BP_threshold"],
                                                        DT_threshold = settings_dict["DT_threshold"],
-                                                       NM_threshold = settings_dict["NM_threshold"])
+                                                       NM_threshold = settings_dict["NM_threshold"],
+                                                       IG_threshold = settings_dict["IG_threshold"])
 binder.in_silico_metrics.to_csv(out_file,sep='\t')
 metrics_in_epitopes.to_csv(f'{out_file[0:-4]}_epitopes.csv' ,sep='\t')

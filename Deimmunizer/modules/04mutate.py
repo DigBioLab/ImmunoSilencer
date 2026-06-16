@@ -1,11 +1,11 @@
-from ImmunoSilencer.Deimmunizer.modules.classes import*
+from classes import*
 from sys import argv
 import pandas as pd
 
 run_name = input()
 settings_dict=get_settings(f'../../../{run_name}')
 
-        
+
 argv.pop(0)
 
 while argv != []:
@@ -48,7 +48,8 @@ binder.in_silico_metrics = metrics
 spots = binder.pick_mutation_spots_from_metrics(n_mutations=settings_dict["mutations_per_cycle"],
                                                 BP_weight=settings_dict["BP_weight"],
                                                 NM_weight=settings_dict["NM_weight"],
-                                                DT_weight=settings_dict["DT_weight"])
+                                                DT_weight=settings_dict["DT_weight"],
+                                                IG_weight=settings_dict["IG_weight"])
 
 rows = binder.in_silico_metrics.iloc[spots]
 

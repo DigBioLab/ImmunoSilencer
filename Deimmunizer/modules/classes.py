@@ -125,6 +125,7 @@ class Binder:
         self.bepi_result = None
         self.disco_result = None
         self.netmhci_result = None
+        self.ig_results = None
         self.contact_positions = None
         self.in_silico_metrics = pd.DataFrame({"Pos":list(range(len(self.sequence))),
                                                "Residue": list(self.sequence),
@@ -209,6 +210,11 @@ class Binder:
     def load_DiscoTope_results(self,result_path):
         self.disco_result = pd.read_csv(result_path).drop(columns=["pdb","chain","res_id","residue","rsa","length","alphafold_struc_flag"])
     
+    def load_ImmunoGen_results(self, result_path):
+        df = pd.read_csv(result_path)
+        df["core"] = df["core_seq"]
+        self.ig_results = df[["core","core_pos","pIRS_rank"]]
+    
     def load_NetMHI_results_single(self,result_path):
         dfs=[]
 
@@ -258,7 +264,9 @@ class Binder:
         if self.netmhci_result is not None:
             df = pd.concat([df,self.netmhci_result.add_prefix("NM_")],axis=1)
         if self.disco_result is not None:
-            df = pd.concat([df,self.disco_result.add_prefix("DT_")],axis=1)    
+            df = pd.concat([df,self.disco_result.add_prefix("DT_")],axis=1)
+        if self.ig_results is not None:
+            df = pd.concat([df,self.ig_results.add_prefix("IG_")],axis=1)    
             
         return(df)
     
@@ -300,7 +308,7 @@ class Binder:
     # def scan_humanness(self): #Returns a list of tuples containing epitopes [Position (1-indexed), sequence(Core), Allotype(s), score(s)] and humanness [min_distance, [peptides]]
     #     return [(epitope, get_humanness(epitope[1])) for epitope in epitopes]
 
-    def get_epitopes_from_metrics(self,softwares:list, NM_threshold=2, BP_threshold=0.1512, maximum_bepi_length=None, DT_threshold=1.5, MHCI_allotypes=["HLA-A0201","HLA-A0301"],filter_epitopes=False): #
+    def get_epitopes_from_metrics(self,softwares:list, NM_threshold=2, BP_threshold=0.1512, maximum_bepi_length=None, DT_threshold=1.5, MHCI_allotypes=["HLA-A0201","HLA-A0301"],filter_epitopes=False,IG_threshold=83): #
         #Allowed softwares [NM,BP,DT] short for [NetMHCI-pan, BepiPred, DiscoTope, Immunogen]
         df = self.in_silico_metrics
         df["Epitopes"]=''
@@ -332,6 +340,24 @@ class Binder:
             df["DT_calibrated_score"] = pd.to_numeric(df["DT_calibrated_score"])
             df.loc[df["DT_calibrated_score"] > DT_threshold, "Epitopes"] += "DT,"
             
+        if "IG" in softwares:
+            df["IG_pIRS_rank"] = pd.to_numeric(df["IG_pIRS_rank"])
+            ig_epitopes={} #dict of {indicies of epitope cores: scores}
+            
+            for i,row in df.iterrows():
+                ig_score = row["IG_pIRS_rank"]
+                if ig_score > IG_threshold:
+                    print(f'{ig_score} over threshold ({i})')
+                    ig_epitope_position = i + int(row["IG_core_pos"])
+                    
+                    if ig_epitope_position in ig_epitopes.keys():
+                        ig_epitopes[ig_epitope_position] = max(ig_score, ig_epitopes[ig_epitope_position])
+                    else:
+                        ig_epitopes[ig_epitope_position] = ig_score
+            print(ig_epitopes)     
+            for i,row in df.iterrows():
+                if i in ig_epitopes.keys():
+                    df["Epitopes"].iloc[i] += 'IG,'
             
         #2nd part is mesuring "humanness"
         df["Epitope_Humanness"]=np.nan
@@ -350,14 +376,15 @@ class Binder:
             df = self.in_silico_metrics
             return df[df["Epitopes"] != '']
         
-    def pick_mutation_spots_from_metrics(self,n_mutations, BP_weight,NM_weight, DT_weight, active_site_punish = -10):
+    def pick_mutation_spots_from_metrics(self,n_mutations, BP_weight,NM_weight,DT_weight,IG_weight,active_site_punish = -10):
         
         scoring_weights={"BP" : BP_weight,
                          "NM" : NM_weight,
-                         "DT" : DT_weight}
+                         "DT" : DT_weight,
+                         "IG" : IG_weight}
 
         #Scan wich softwares are pressent
-        allowed_softwares = ["BP","NM","DT"]
+        allowed_softwares = ["BP","NM","DT","IG"]
         softwares = [] 
         for colname in self.in_silico_metrics.columns:
             pre = colname[0:2]
@@ -449,6 +476,8 @@ class Binder:
             
             elif kind == 'DT':
                 self.blossumsub(mut_pos = row.Pos, mutation_probs=blossumsub_mutation_probs , report_to_path = report_to_path)
+            elif kind == 'IG':
+                self.blossumsub(mut_pos = np.random.randint(row.Pos, row.Pos+9), mutation_probs=blossumsub_mutation_probs , report_to_path = report_to_path, epitope_type = "MHC-II")
         
         if suffix != None:
             self.name += suffix
